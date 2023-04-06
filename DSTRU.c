@@ -21,14 +21,20 @@ typedef int bul; //boolean
 void NextPlayerMove(int,);
 void board(); //print board
 void DisWinner(); //display winner
+void GameOver();
 
 int main(){
   char Board[3][3];
   bul ok,next,turn;
-  
+  int One,Two,Three,Four,Five,Six;
+  int Peg = {1,2,3,4,5,6,7,8,9};
+  UPEG[9]; // unused peg //make this as a reference of what can be used.
+
+          
   ok = FALSE;
   next = FALSE;
   turn = TRUE;
+
   
   InitBoard();
   
@@ -49,6 +55,7 @@ void InitBoard(){
    }
 }
 
+//for printing board
 void Board(){
   BORDERS(1);
   printf("%c %c %c %c %c %c %c",186,Board[][],186,Board[][],186,Board[][],186);
@@ -59,6 +66,7 @@ void Board(){
   BORDERS(2);
 }
 
+//for displaying winner
 void DisWinner(){
   
 }
@@ -88,4 +96,16 @@ void BORDERS(int n){
       printf("%c\n",188);
       break;
   }
+}
+
+int GameOver(int over){
+     if(){
+     }
+     else if(){
+     }
+     else if(){
+     }
+     else if(){
+     }     
+     return  !over; 
 }
