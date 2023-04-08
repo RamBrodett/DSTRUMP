@@ -25,11 +25,12 @@ void Winner();
 void GameOver();
 void COLORTEXT(int);
 void WHoTURN(sys);
-void getINPUT(int*,int*,int*,sys[][MaxR],sys,sys [][MaxR]);
+void getINPUT(int*,int*,int*,sys[][MaxR],sys,sys[][MaxR],int[],sys);
 void RstEverything(sys[][MaxR],sys[][MaxR],bul*,
 sys[],sys[],sys[],sys[],sys[],sys[],sys*,int[],sys*,
 sys*,sys*);
-void NextPlayerMove();
+void NextPlayerMove(sys[][MaxR],sys[][MaxR],int[],sys[],sys[],sys[],
+sys[],sys[],sys[],sys*,sys*,sys*, int row,int col,int peg);
 void BORDERS(int);
 
 int main(){
@@ -57,12 +58,13 @@ int main(){
   //-------------------START OF GAME---------------
   do
   {
-    RstEverything(BOARD,OCC,&over,One,Two,Three,Four,Five,
-    Six,&PegSize,PEGS,&ok,&turn,&next);
+    //RstEverything(BOARD,OCC,&over,One,Two,Three,Four,Five,
+    //Six,&PegSize,PEGS,&ok,&turn,&next);
 
     while(!over){
-      getINPUT(&row,&col,&peg,OCC,turn,BOARD);
-      system("pause");
+      getINPUT(&row,&col,&peg,OCC,turn,BOARD,PEGS,PegSize);
+      NextPlayerMove(BOARD,OCC,PEGS,One,Two,Three,Four,Five,Six,&ok,
+      &turn,&next,row,col,peg);
     }
 
   } while(RESPONSE == TRUE);
@@ -79,8 +81,104 @@ int main(){
    @param3 - col pos
    @param4 - system variables
 */
-void NextPlayerMove(){
+void NextPlayerMove(sys Board[][MaxR],sys OCC [][MaxR],int PEGS[],sys One [],sys Two [],sys Three[],
+sys Four [],sys Five[],sys Six[],sys *ok,sys *turn,sys *next, int row,int col,int peg){
+  index i,j;
+  int position = row*10+col;
+  //assign the pos as occ
+  for(i=0;i<MaxR;i++){
+    for(j=0;j<MaxR;j++){
+      if(OCC[i][j]==0){
+        OCC[i][j] = position;
+        j = MaxR;
+        i = MaxR;
+      }
+    }
+  }
+  Board[row-1][col-1]= peg; //assign peg to board pos
+  //remove the peg in available PEGS
+  for(i=0;i<9;i++){
+    if(peg==PEGS[i]){
+      PEGS[i] = 0;
+      i=9;
+    }
+  }
+  *ok = !(*ok);
 
+  if(ok&&position==11||position==12||position==13)
+  {
+    for(i=0;i<3;i++){
+      if(One[i]==0){
+        One[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+  }//t
+  if(ok&&position==21||position==22||position==23){
+    for(i=0;i<3;i++){
+      if(Two[i]==0){
+        Two[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+  }//m
+  if(ok&&position==31||position==32||position==33){
+    for(i=0;i<3;i++){
+      if(Three[i]==0){
+        Three[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+  }//b
+  if(ok&&next&&position==11||position==21||position==31){
+    for(i=0;i<3;i++){
+      if(Four[i]==0){
+        Four[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+    *ok = !(*ok);
+
+  }//l
+  if(ok&&next&&position==12||position==22||position==32){
+    for(i=0;i<3;i++){
+      if(Five[i]==0){
+        Five[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+    *ok = !(*ok);
+  }//c
+  if(ok&&next&&position==13||position==23||position==33){
+    for(i=0;i<3;i++){
+      if(Six[i]==0){
+        Six[i]=peg;
+        i=3;
+      }
+    }
+    *next = !(*next);
+    *ok = !(*ok);
+  }//r
+
+  system("pause");
+  for(i=0;i<3;i++) printf("%d ",One[i]);
+  printf("\n");
+  for(i=0;i<3;i++) printf("%d ",Two[i]);
+  printf("\n");
+  for(i=0;i<3;i++) printf("%d ",Three[i]);
+  printf("\n");
+  for(i=0;i<3;i++) printf("%d ",Four[i]);
+  printf("\n");
+  for(i=0;i<3;i++) printf("%d ",Five[i]);
+  printf("\n");
+  for(i=0;i<3;i++) printf("%d ",Six[i]);
+  printf("\n");
+  system("pause");
 }
 /*
   board ==     1    2    3
@@ -141,13 +239,15 @@ sys*ok,sys*turn,sys*next){
   *next = FALSE;
 }
 
+
+
 //------------------GET INPUTS----------------------
 
 //TO GET VALID INPUTS
-void getINPUT(int*row,int*col,int*PEG,sys OCC[][MaxR],sys turn,sys BOARD[][MaxR]){
+void getINPUT(int*row,int*col,int*PEG,sys OCC[][MaxR],sys turn,sys BOARD[][MaxR],int PEGS[],sys PegSize){
   int x,y,peg;
   index i,j;
-  bul found =0,end = 0;
+  bul found = 0,end = 0;
   //get valid coordinates
   do{
     Board(BOARD);
@@ -174,7 +274,6 @@ void getINPUT(int*row,int*col,int*PEG,sys OCC[][MaxR],sys turn,sys BOARD[][MaxR]
     printf("Pick: ");
     scanf("%1d",&y);
     fflush(stdin);
-    system("cls");
     for(i=0;i<MaxR;i++){
       for(j=0;j<MaxR;j++){
         if(OCC[i][j]==x*10+y){
@@ -190,17 +289,55 @@ void getINPUT(int*row,int*col,int*PEG,sys OCC[][MaxR],sys turn,sys BOARD[][MaxR]
     else {
       found = 0;
       COLORTEXT(2);
-      printf("Enter valid coordinates.\n");
+      printf("Already occupied enter valid coordinates.\n");
       COLORTEXT(1);
+      printf("PRESS ANY KEY TO CONTINUE");
+      getch();
     }
+    system("cls");
   }while(!end);
   end = 0;
   //get valid peg
   do{
-    //WHoTURN(turn);
-
+    Board(BOARD);
+    WHoTURN(turn);
+    printf("ENTER PEG\n");
+    BORDERS(6);
+    printf("Selected row/col [%d,%d]\n",x,y);
+    printf("Available Pegs: ");
+    for(i=0;i<PegSize;i++){
+      if(PEGS[i]!=0)
+        printf("%d ",PEGS[i]);
+    }
+    printf("\n");
+    BORDERS(6);
+    printf("Pick: ");
+    scanf("%1d",&peg);
+    fflush(stdin);
+    for(i=0;i<PegSize;i++)
+    {
+      if(peg == PEGS[i]){
+        found = 1;
+      }
+    }
+    if(found)
+    {
+      end = 1;
+      found = 0;
+      *PEG = peg;
+    }
+    else{
+      COLORTEXT(2);
+      printf("Peg already used enter a valid one.\n");
+      COLORTEXT(1);
+      printf("PRESS ANY KEY TO CONTINUE");
+      getch();
+    }
+    system("cls");
   }while(!end);
 }
+
+
 
 //-----------------DISPLAY FUNCTIONS-----------------------
 
@@ -328,12 +465,12 @@ void Board(sys BOARD[][MaxR]){
   if(BOARD[2][0]==0)
     printf("  ");
   else
-    printf("%1d ",BOARD[3][0]);
+    printf("%1d ",BOARD[2][0]);
   printf("%c ",186);
   if(BOARD[2][1]==0)
     printf("  ");
   else
-    printf("%1d ",BOARD[3][1]);
+    printf("%1d ",BOARD[2][1]);
   printf("%c ",186);
   if(BOARD[2][2]==0)
     printf("  ");
