@@ -7,7 +7,7 @@ Members:
           @ SALVADOR, JARYLL PENA
 */
 
-#include <stio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 //---------macros------
